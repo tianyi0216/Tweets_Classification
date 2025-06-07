@@ -3,9 +3,9 @@ import pandas as pd
 
 prompts = {
     # Baseline prompt
-    "baseline": 'What is the stance of the following tweet with respect to COVID-19 vaccine? Here is the tweet: "{tweet}" Please use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".',
+    "baseline": 'What is the stance of the following tweet with respect to COVID-19 vaccine? Here is the tweet: "{tweet}". Please use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".',
     # Role-based prompt
-    "Role-based": 'You are a senior public health expert analyst who classifies social media posts about  COVID-19 vaccination. For a given tweet, decide whether the author is in-favor, against, or neutral-or-unclear of the vaccine. Here is the tweet: "{tweet}" Please use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".'
+    "role_based": 'You are a senior public health expert analyst who classifies social media posts about COVID-19 vaccination. For a given tweet, decide whether the author is in-favor, against, or neutral-or-unclear of the vaccine. Here is the tweet: "{tweet}". Please use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".'
 }
 
 def get_example_from_df(data, n_examples=1):
@@ -55,7 +55,7 @@ def get_few_shot_prompt(tweet):
         A: 
         """,
 
-        "few_shot_role_based": f"""You are a senior public health expert analyst who classifies social media posts about  COVID-19 vaccination. For a given tweet, answer with exactly one word from the following 3 categories: "in-favor", "against", "neutral-or-unclear".
+        "few_shot_role_based": f"""You are a senior public health expert analyst who classifies social media posts stating their stance about COVID-19 vaccination. Answer with exactly one word from the following 3 categories: "in-favor", "against", "neutral-or-unclear".
 
         Q: {examples['AGAINST']['tweet'].values[0]}
         A: against
@@ -76,3 +76,27 @@ def format_prompt(prompt, tweet):
     Format the prompt for the tweet
     """
     return prompt.format(tweet=tweet)
+
+def add_cot_prompt(prompt, type = "base"):
+    """
+    Add a CoT prompt to the given prompt
+    Args:
+        prompt: the prompt to add the CoT to
+        type: the type of CoT to add, either "base" or "few_shot"
+    Returns:
+        The prompt with the CoT added
+    """
+    if type == "base":
+        # add cot to the last sentence of the prompt
+        prompt_list = prompt.split(".")
+        prompt_list[-1] = 'Think step by step, and then use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".'
+        return ".".join(prompt_list)
+    elif type == "few_shot":
+        # add cot to the first sentence before the newline
+        prompt_list = prompt.split("\n")
+        prompt_list_0_split = prompt_list[0].split(".")
+        prompt_list_0_split[-1] = 'Think step by step, and then use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".'
+        prompt_list[0] = ".".join(prompt_list_0_split)
+        return "\n".join(prompt_list)
+    else:
+        raise ValueError(f"Invalid type: {type}")

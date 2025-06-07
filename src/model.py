@@ -83,8 +83,8 @@ class StanceClassifier:
             
             pred_batch = []
             for j, output in enumerate(outputs):
-                response = self.tokenizer.decode(output[inputs['input_ids'][j].shape[0]:], skip_special_tokens=True)
-                response = self.clean_prediction(response)
+                response = self.tokenizer.decode(output, skip_special_tokens=True)
+                # response = self.clean_prediction(response)
                 pred_batch.append(response)
             
             all_predictions.extend(pred_batch)
