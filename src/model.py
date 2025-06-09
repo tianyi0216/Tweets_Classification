@@ -2,13 +2,14 @@ import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 class StanceClassifier:
-    def __init__(self, model_name = "google/flan-t5-large", max_new_tokens = 128, device = None):
+    def __init__(self, model_name = "google/flan-t5-large", max_new_tokens = 10, device = None, max_length = 512):
         """
         Initialize the stance classifier
         Args:
             model_name: hf model name, default is google/flan-t5-large
             max_new_tokens: maximum number of new tokens to generate
             device: device to use for inference, default is cuda if available, otherwise cpu
+            max_length: maximum length of the input text
         """
         # set device
         if device is None:
@@ -23,6 +24,7 @@ class StanceClassifier:
         print(f"Using device: {self.device}")
 
         self.max_new_tokens = max_new_tokens
+        self.max_length = max_length
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         self.model.to(self.device)
@@ -57,11 +59,11 @@ class StanceClassifier:
         Returns:
             The prediction as a string from the model
         """
-        inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).to(self.device)
+        inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=self.max_length).to(self.device)
         with torch.no_grad():
             outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens)
         response = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return response
+        return self.clean_prediction(response)
 
     def predict_batch(self, prompts, batch_size = 16):
         """
@@ -76,7 +78,7 @@ class StanceClassifier:
         for i in range(0, len(prompts), batch_size):
             prompts_batch = prompts[i:i+batch_size]
             
-            inputs = self.tokenizer(prompts_batch, return_tensors="pt", padding=True, truncation=True, max_length=512).to(self.device)
+            inputs = self.tokenizer(prompts_batch, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
             
             with torch.no_grad():
                 outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens)
@@ -84,7 +86,7 @@ class StanceClassifier:
             pred_batch = []
             for j, output in enumerate(outputs):
                 response = self.tokenizer.decode(output, skip_special_tokens=True)
-                # response = self.clean_prediction(response)
+                response = self.clean_prediction(response)
                 pred_batch.append(response)
             
             all_predictions.extend(pred_batch)

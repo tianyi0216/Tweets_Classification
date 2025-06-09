@@ -2,3 +2,5 @@ pandas
 matplotlib
 torch
 transformers
+peft
+scikit-learn

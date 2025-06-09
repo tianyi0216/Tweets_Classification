@@ -11,9 +11,12 @@ def get_parser():
     parser.add_argument("--input_file", type=str, required=True)
     parser.add_argument("--output_file", type=str, required=True)
     parser.add_argument("--prompt_type", type=str, required=True, choices=["baseline", "role_based", "few_shot_base", "few_shot_role_based"], default="baseline")
-    parser.add_argument("--cot", action="store_true")
+    parser.add_argument("--cot", type=bool, default=False)
     parser.add_argument("--batch_size", type=int, default=None)
+    parser.add_argument("--max_length", type=int, default=512)
+    parser.add_argument("--max_new_tokens", type=int, default=10)
     parser.add_argument("--model_name", type=str, default="google/flan-t5-large")
+    parser.add_argument("--device", type=str, default=None)
     return parser
 
 def get_prompt(tweet, prompt_type, cot = False):
@@ -47,7 +50,7 @@ def main():
     df = df.dropna(subset=['tweet', 'label_majority'])
     df = df.drop_duplicates(subset=['tweet'], keep='first')
 
-    model = StanceClassifier(model_name = args.model_name)
+    model = StanceClassifier(model_name = args.model_name, device = args.device, max_length = args.max_length, max_new_tokens = args.max_new_tokens)
     tweets = df['tweet'].tolist()
     predictions = []
 
