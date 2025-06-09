@@ -6,7 +6,7 @@
 PROMPT_TYPE=${1:-"baseline"}
 EPOCHS=${2:-5}
 BATCH_SIZE=${3:-16}
-LEARNING_RATE=${4:-1e-3}
+LEARNING_RATE=${4:-1e-4}
 OUTPUT_DIR=${5:-"./checkpoints"}
 USE_LORA=${6:-"true"}
 

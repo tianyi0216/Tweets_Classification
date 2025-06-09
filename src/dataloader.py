@@ -54,12 +54,12 @@ class TweetDataset(Dataset):
         else:
             input_text = prompts.format_prompt(prompts.prompts[self.prompt_type], tweet)
             target_text = self.label_map[label]
-            toeknized_input = self.tokenizer(input_text, return_tensors="pt", padding=False, truncation=True, max_length=512)
-            toeknized_target = self.tokenizer(target_text, return_tensors="pt", padding=False, truncation=True, max_length=10)
+            tokenized_input = self.tokenizer(input_text, return_tensors="pt", padding=False, truncation=True, max_length=512)
+            tokenized_target = self.tokenizer(target_text, return_tensors="pt", padding=False, truncation=True, max_length=10)
             return {
-                'input_ids': toeknized_input['input_ids'],
-                'attention_mask': toeknized_input['attention_mask'],
-                'labels': toeknized_target['input_ids']
+                'input_ids': tokenized_input['input_ids'].flatten(),
+                'attention_mask': tokenized_input['attention_mask'].flatten(),
+                'labels': tokenized_target['input_ids'].flatten()
             }
 
 if __name__ == "__main__":
