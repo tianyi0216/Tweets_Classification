@@ -1,7 +1,6 @@
-## Data Loader
+# Prepare the dataset for finetuning the model
 
 import pandas as pd
-import torch
 from torch.utils.data import Dataset
 import prompts
 from transformers import AutoTokenizer
@@ -15,7 +14,10 @@ class TweetDataset(Dataset):
         """
         Initializes the dataset
         Args:
-            csv_path: path to the csv file for the dataset
+            df: the dataframe with column "tweet" and "label_majority"
+            tokenizer: huggingface tokenizer to tokenize the text data
+            train: whether the dataset is for finetuning purpose or evaluation
+            prompt_type: the type of prompt to use for finetuning, for now, only "baseline" and "role_based" are supported for simplicity of finetuning
         """
         self.df = df
 
@@ -23,6 +25,7 @@ class TweetDataset(Dataset):
         self.prompt_type = prompt_type
         if self.train:
             self.tokenizer = tokenizer
+            # map the dataset's label to what we want the model to output
             self.label_map = {
                 'FAVOR': 'in-favor',
                 'AGAINST': 'against',
@@ -41,17 +44,20 @@ class TweetDataset(Dataset):
         Args:
             idx: index of the item
         Returns:
-            A dictionary containing the tweet and label
+            A dictionary containing the tweet and label for eval, and tokenized input, attention mask, and target for finetuning
         """
         row = self.df.iloc[idx]
         tweet = row['tweet']
         label = row['label_majority']
+
+        # for evaluation, return the tweet and label directly
         if not self.train:
             return {
                 'tweet': tweet,
                 'label': label
             }
         else:
+            # for finetuning, add the prompt to the tweet and tokenize the input and target
             input_text = prompts.format_prompt(prompts.prompts[self.prompt_type], tweet)
             target_text = self.label_map[label]
             tokenized_input = self.tokenizer(input_text, return_tensors="pt", padding=False, truncation=True, max_length=512)

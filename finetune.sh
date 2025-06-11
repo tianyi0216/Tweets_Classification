@@ -4,11 +4,11 @@
 # Usage: ./finetune.sh [prompt_type] [use_lora] [epochs] [batch_size]
 
 PROMPT_TYPE=${1:-"baseline"}
-EPOCHS=${2:-5}
+EPOCHS=${2:-15}
 BATCH_SIZE=${3:-16}
-LEARNING_RATE=${4:-1e-4}
+LEARNING_RATE=${4:-2e-5}
 OUTPUT_DIR=${5:-"./checkpoints"}
-USE_LORA=${6:-"true"}
+USE_LORA=${6:-"false"}
 
 OPTS=""
 OPTS="$OPTS --data_file data/Q2_20230202_majority.csv"

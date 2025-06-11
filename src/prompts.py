@@ -1,4 +1,4 @@
-# Prompts for the tweet classification task
+# Different prompts types for the tweet classification task
 import pandas as pd
 
 prompts = {
@@ -8,26 +8,30 @@ prompts = {
     "role_based": 'You are a senior public health expert analyst who classifies social media posts about COVID-19 vaccination. For a given tweet, decide whether the author is in-favor, against, or neutral-or-unclear of the vaccine. Here is the tweet: "{tweet}". Please use exactly one word from the following 3 categories to label it: "in-favor", "against", "neutral-or-unclear".'
 }
 
-def get_example_from_df(data, n_examples=1):
+def get_example_from_df(data):
     """
-    Get some examples from each stance in the dataframe for few-shot learning
+    Get one example from each stance in the dataset for few-shot prompt
+    Args:
+        data: the dataframe with column "label_majority"
+    Returns:
+        A dictionary with the each stance as the key and the corresponding example as the value
     """
     result = {}
 
     # against stance
     against_df = data[data['label_majority'] == 'AGAINST']
     if len(against_df) > 0:
-        result['AGAINST'] = against_df.sample(n_examples)
+        result['AGAINST'] = against_df.sample(1)
 
     # favor stance
     favor_df = data[data['label_majority'] == 'FAVOR']
     if len(favor_df) > 0:
-        result['FAVOR'] = favor_df.sample(n_examples)
+        result['FAVOR'] = favor_df.sample(1)
 
     # neutral-or-unclear stance
     none_df = data[data['label_majority'] == 'NONE']
     if len(none_df) > 0:
-        result['NONE'] = none_df.sample(n_examples)
+        result['NONE'] = none_df.sample(1)
 
     return result
 
@@ -37,7 +41,7 @@ def get_few_shot_prompt(tweet):
     """
 
     df = pd.read_csv("data/Q2_20230202_majority.csv")
-    examples = get_example_from_df(df, n_examples=1)
+    examples = get_example_from_df(df)
 
     return {
         "few_shot_base": f"""What is the stance of the following tweet with respect to COVID-19 vaccine? Answer with exactly one word from the following 3 categories: "in-favor", "against", "neutral-or-unclear".
@@ -73,16 +77,21 @@ def get_few_shot_prompt(tweet):
 
 def format_prompt(prompt, tweet):
     """
-    Format the prompt for the tweet
+    Add the tweet to the prompt
+    Args:
+        prompt: the prompt to add the tweet to, should have a "{tweet}" placeholder
+        tweet: the tweet to add to the prompt, should be a string
+    Returns:
+        The prompt with the tweet added and ready to be used
     """
     return prompt.format(tweet=tweet)
 
 def add_cot_prompt(prompt, type = "base"):
     """
-    Add a CoT prompt to the given prompt
+    Make a prompt with CoT added
     Args:
-        prompt: the prompt to add the CoT to
-        type: the type of CoT to add, either "base" or "few_shot"
+        prompt: the prompt to add the CoT to, should already be formatted with the tweet
+        type: the type of prompt, either "base" or "few_shot"
     Returns:
         The prompt with the CoT added
     """
