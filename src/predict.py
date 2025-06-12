@@ -94,7 +94,7 @@ def main():
 
     # map the predictions back to the label names in the original dataset
     mapping = {'in-favor': 'FAVOR', 'against': 'AGAINST', 'neutral-or-unclear': 'NONE'}
-    df['prediction'] = [mapping[pred] for pred in predictions]
+    df['label_pred'] = [mapping[pred] for pred in predictions]
 
     # save the predictions to a csv file
     df.to_csv(args.output_file, index=False)

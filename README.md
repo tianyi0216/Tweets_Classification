@@ -9,6 +9,8 @@ The project implements stance classification on tweets related to COVID-19 vacci
 
 We explore different fine-tuning approaches and prompt strategies to achieve a high F1-score performance.
 
+The final prediction from the best model is in the home directory `Q2_20230202_majority_predictions.csv`.
+
 ## Dataset
 
 The dataset we used is `Q2_20230202_majoritys.csv` in the `data` folder. The size of the dataset is 5751.
@@ -39,6 +41,7 @@ The dataset we used is `Q2_20230202_majoritys.csv` in the `data` folder. The siz
 ├── run_inference.sh # Run a single prediction for a single prompt strategy
 ├── finetune.sh # Run finetuning
 ├── token_analysis.py # find max length for label
+├── Q2_20230202_majority_predictions.csv # final prediction from the best model
 ├── requirements.txt
 └── README.md
 ```
