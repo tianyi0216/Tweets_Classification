@@ -3,13 +3,14 @@
 PROMPT_TYPE=${1:-"baseline"}
 BATCH_SIZE=${2:-16}
 COT=${3:-False}
+MODEL_NAME=${4:-"model/full_finetuned"}
 
 OPTS=""
 OPTS="$OPTS --input_file data/Q2_20230202_majority.csv"
 OPTS="$OPTS --output_file output/full_nonlora/Q2_20230202_majority_predictions_${PROMPT_TYPE}_${COT}.csv"
 OPTS="$OPTS --prompt_type $PROMPT_TYPE"
 OPTS="$OPTS --batch_size $BATCH_SIZE"
-OPTS="$OPTS --model_name model/checkpoint-2272"
+OPTS="$OPTS --model_name $MODEL_NAME"
 OPTS="$OPTS --cot $COT" # add cot to the prompt
 OPTS="$OPTS --max_length 512"
 OPTS="$OPTS --max_new_tokens 10"

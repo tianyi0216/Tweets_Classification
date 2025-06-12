@@ -7,7 +7,7 @@ PROMPT_TYPE=${1:-"baseline"}
 EPOCHS=${2:-15}
 BATCH_SIZE=${3:-16}
 LEARNING_RATE=${4:-2e-5}
-OUTPUT_DIR=${5:-"./checkpoints"}
+OUTPUT_DIR=${5:-"./model/full_finetuned"}
 USE_LORA=${6:-"false"}
 
 OPTS=""
