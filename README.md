@@ -86,7 +86,7 @@ The rest of the hyperparameters are set in the `finetune.sh` file and `train.py`
 
 ### Inference
 
-To generate a prediction file for a single experiment, you can run the following command:
+To generate a prediction file with a column `label_pred` for a single experiment, you can run the following command:
 
 ```bash
 # Run inference for a single prompt strategy
@@ -101,7 +101,7 @@ To generate prediction files for all prompt strategies, you can run the followin
 ./run_all_experiment.sh
 ```
 
-The output would be the original dataset with an additional column `prediction` for the predicted stance.
+The output would be the original dataset with an additional column `label_pred` for the predicted stance.
 
 By default, the output would be saved in the `output` folder with subfolders for different model types. You can modify the `run_inference.sh` file to change the output directory.
 
